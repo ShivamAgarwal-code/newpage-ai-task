@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Meridian — AI Usage & Admin</title>
+<style>
+  :root { --bg:#0f1221; --panel:#1a1e35; --ink:#e8eaf3; --muted:#9aa3c7; --line:#2b3157;
+          --accent:#7c9cff; --ok:#49d49d; --off:#ff7a85; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+         background:var(--bg); color:var(--ink); }
+  header { padding:16px 24px; border-bottom:1px solid var(--line); display:flex; gap:20px;
+           align-items:center; flex-wrap:wrap; background:var(--panel); position:sticky; top:0; }
+  h1 { font-size:16px; margin:0; font-weight:650; letter-spacing:.2px; }
+  .env { font-size:11px; padding:2px 8px; border-radius:999px; background:#2a3366; color:var(--accent);
+         text-transform:uppercase; letter-spacing:.08em; }
+  main { padding:24px; max-width:1100px; margin:0 auto; display:grid; gap:20px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+  .card h2 { font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted);
+             margin:0 0 14px; font-weight:600; }
+  label { color:var(--muted); font-size:12px; margin-right:6px; }
+  select, button { font:inherit; background:#121634; color:var(--ink); border:1px solid var(--line);
+                   border-radius:8px; padding:7px 10px; }
+  button { cursor:pointer; }
+  button.primary { background:var(--accent); color:#0b0e1f; border:none; font-weight:600; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  .row { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+  table { width:100%; border-collapse:collapse; }
+  th, td { text-align:right; padding:8px 10px; border-bottom:1px solid var(--line); }
+  th:first-child, td:first-child { text-align:left; }
+  th { color:var(--muted); font-weight:600; font-size:12px; }
+  .pill { font-size:11px; padding:2px 8px; border-radius:999px; }
+  .pill.lead { background:#33375f; color:#cdd4ff; }
+  .pill.admin { background:#3a2a55; color:#e3c6ff; }
+  .pill.member { background:#26305a; color:#aeb8e6; }
+  .num { font-variant-numeric: tabular-nums; }
+  .toggle { display:inline-flex; align-items:center; gap:8px; }
+  .state-on { color:var(--ok); font-weight:600; }
+  .state-off { color:var(--off); font-weight:600; }
+  .muted { color:var(--muted); }
+  .banner { padding:10px 14px; border-radius:8px; margin-top:10px; font-size:13px; display:none; }
+  .banner.err { background:#3a1f2b; color:#ff9aa6; display:block; }
+  .banner.ok  { background:#16342a; color:#7ef0c4; display:block; }
+  .kpis { display:flex; gap:28px; flex-wrap:wrap; }
+  .kpi .v { font-size:24px; font-weight:700; }
+  .kpi .l { color:var(--muted); font-size:12px; }
+  .hint { font-size:12px; color:var(--muted); margin-top:6px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Meridian · AI Usage &amp; Admin</h1>
+  <span class="env" id="env">—</span>
+  <div class="row" style="margin-left:auto">
+    <label for="actor">Acting as</label>
+    <select id="actor"></select>
+    <span id="role"></span>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <h2>Query</h2>
+    <div class="row">
+      <label for="group">Group</label>
+      <select id="group"></select>
+      <label for="period">Period</label>
+      <select id="period">
+        <option>last_7_days</option>
+        <option>last_30_days</option>
+        <option>2026-08</option>
+        <option selected>2026-09</option>
+        <option>2026-W36</option>
+        <option>2026-W37</option>
+        <option>2026-W38</option>
+      </select>
+      <button class="primary" id="run">Load usage</button>
+    </div>
+    <div class="hint">Identity is simulated. The switcher sends your choice as the
+      <code>X-Actor</code> header; the server decides what that role may see and change.</div>
+    <div class="banner" id="banner"></div>
+  </div>
+
+  <div class="card" id="summaryCard">
+    <h2>Usage &amp; cost by platform</h2>
+    <div class="kpis" id="kpis"></div>
+    <table id="platformTable" style="margin-top:16px">
+      <thead><tr><th>Platform</th><th>Input</th><th>Output</th><th>Total tokens</th><th>Cost (USD)</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>By week</h2>
+    <table id="weeklyTable">
+      <thead><tr><th>ISO week</th><th>Claude tokens</th><th>Claude $</th><th>Gemini tokens</th><th>Gemini $</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Top users</h2>
+    <table id="topTable">
+      <thead><tr><th>#</th><th>Name</th><th>Total tokens</th><th>Cost (USD)</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Capability controls</h2>
+    <table id="capTable">
+      <thead><tr><th>Capability</th><th>State</th><th>Last changed</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div class="hint" id="capHint"></div>
+  </div>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let DIR = { users: [], groups: [] };
+
+function actor() { return $("actor").value; }
+function fmt(n) { return (n ?? 0).toLocaleString("en-US"); }
+function money(n) { return "$" + (n ?? 0).toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+async function api(path, opts = {}) {
+  const headers = Object.assign({ "X-Actor": actor() }, opts.headers || {});
+  const res = await fetch(path, Object.assign({}, opts, { headers }));
+  const body = await res.json().catch(() => ({}));
+  return { ok: res.ok, status: res.status, body };
+}
+
+function banner(msg, kind) {
+  const b = $("banner"); b.textContent = msg; b.className = "banner " + kind;
+  if (!msg) b.className = "banner";
+}
+
+async function boot() {
+  const dir = await (await fetch("/api/directory")).json();
+  DIR = dir;
+  $("actor").innerHTML = dir.users
+    .map(u => `<option value="${u.email}">${u.name} — ${u.role}</option>`).join("");
+  $("group").innerHTML = dir.groups
+    .map(g => `<option value="${g.group_id}">${g.name}</option>`).join("");
+  await onActorChange();
+}
+
+async function onActorChange() {
+  const me = await api("/api/me");
+  if (!me.ok) { banner(me.body.detail || "unknown caller", "err"); return; }
+  const m = me.body;
+  $("env").textContent = m.environment;
+  $("role").innerHTML = `<span class="pill ${m.role.includes("admin")?"admin":m.role.includes("lead")?"lead":"member"}">${m.role}</span>`;
+  // default the group selector to the caller's own group
+  $("group").value = m.group_ids[0];
+  await refresh();
+}
+
+async function refresh() {
+  banner("", "");
+  const group = $("group").value, period = $("period").value;
+  const q = `group=${group}&period=${period}`;
+
+  const summary = await api(`/api/usage/summary?${q}`);
+  if (!summary.ok) {
+    banner(`${summary.status} — ${summary.body.reason || summary.body.detail || "denied"}`, "err");
+    clearTables();
+    await loadCapabilities(group); // capability_status may still be allowed/denied — show its own result
+    return;
+  }
+  renderSummary(summary.body);
+  const weekly = await api(`/api/usage/weekly?group=${group}&period=2026-08`); // wide; server clamps to data
+  renderWeekly(weekly.ok ? weekly.body.weeks : []);
+  const top = await api(`/api/usage/top-users?${q}&limit=10`);
+  renderTop(top.ok ? top.body : []);
+  await loadCapabilities(group);
+}
+
+function clearTables() {
+  $("kpis").innerHTML = ""; $("platformTable").tBodies[0].innerHTML = "";
+  $("weeklyTable").tBodies[0].innerHTML = ""; $("topTable").tBodies[0].innerHTML = "";
+}
+
+function renderSummary(s) {
+  $("kpis").innerHTML = `
+    <div class="kpi"><div class="v num">${fmt(s.totals.total_tokens)}</div><div class="l">total tokens · ${s.period.start} → ${s.period.end_exclusive}</div></div>
+    <div class="kpi"><div class="v num">${money(s.totals.cost_usd)}</div><div class="l">total cost</div></div>`;
+  $("platformTable").tBodies[0].innerHTML = s.platforms.map(p => `
+    <tr><td>${p.platform}</td><td class="num">${fmt(p.input_tokens)}</td>
+    <td class="num">${fmt(p.output_tokens)}</td><td class="num">${fmt(p.total_tokens)}</td>
+    <td class="num">${money(p.cost_usd)}</td></tr>`).join("");
+}
+
+function renderWeekly(weeks) {
+  $("weeklyTable").tBodies[0].innerHTML = weeks.map(w => `
+    <tr><td>${w.week}</td><td class="num">${fmt(w.claude.total_tokens)}</td>
+    <td class="num">${money(w.claude.cost_usd)}</td><td class="num">${fmt(w.gemini.total_tokens)}</td>
+    <td class="num">${money(w.gemini.cost_usd)}</td></tr>`).join("");
+}
+
+function renderTop(rows) {
+  $("topTable").tBodies[0].innerHTML = rows.map((u, i) => `
+    <tr><td>${i+1}</td><td>${u.name}</td><td class="num">${fmt(u.total_tokens)}</td>
+    <td class="num">${money(u.cost_usd)}</td></tr>`).join("");
+}
+
+async function loadCapabilities(group) {
+  const res = await api(`/api/capabilities?group=${group}`);
+  const tbody = $("capTable").tBodies[0];
+  if (!res.ok) {
+    tbody.innerHTML = `<tr><td colspan="4" class="muted">${res.body.reason || res.body.detail || "denied"}</td></tr>`;
+    $("capHint").textContent = "";
+    return;
+  }
+  const me = (await api("/api/me")).body;
+  const canWrite = me.scopes["capabilities:write"] &&
+      (me.role === "platform_admin" || me.group_ids.includes(group));
+  tbody.innerHTML = res.body.map(c => `
+    <tr>
+      <td>${c.capability}</td>
+      <td><span class="${c.enabled ? "state-on" : "state-off"}">${c.enabled ? "enabled" : "disabled"}</span></td>
+      <td class="muted">${c.updated_at ? c.updated_at.replace("T"," ").replace("+00:00","Z") + " · " + (c.updated_by||"") : "default"}</td>
+      <td><button data-cap="${c.capability}" data-next="${!c.enabled}" ${canWrite ? "" : "disabled"}>
+        ${c.enabled ? "Disable" : "Enable"}</button></td>
+    </tr>`).join("");
+  $("capHint").textContent = canWrite
+    ? "You may change controls for this group."
+    : "Read-only: your role/environment does not permit changing these controls here.";
+  tbody.querySelectorAll("button").forEach(btn => btn.addEventListener("click", async () => {
+    const r = await api("/api/capabilities", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ group, capability: btn.dataset.cap, enabled: btn.dataset.next === "true" }),
+    });
+    if (!r.ok) banner(`${r.status} — ${r.body.reason || r.body.detail || "denied"}`, "err");
+    else banner(`Set ${btn.dataset.cap} → ${btn.dataset.next} for ${group}.`, "ok");
+    await loadCapabilities(group);
+  }));
+}
+
+$("actor").addEventListener("change", onActorChange);
+$("group").addEventListener("change", refresh);
+$("run").addEventListener("click", refresh);
+$("period").addEventListener("change", refresh);
+boot();
+</script>
+</body>
+</html>
