@@ -1,0 +1,22 @@
+{
+  "contextFileName": "GEMINI.md",
+  "description": "Meridian AI usage & capability controls, scoped per caller.",
+  "mcpServers": {
+    "meridian-usage-dev": {
+      "args": [
+        "${MERIDIAN_REPO}/connector/dist/index.js"
+      ],
+      "command": "node",
+      "cwd": "${MERIDIAN_REPO}/connector",
+      "env": {
+        "MERIDIAN_ACTOR": "daniel.okafor@meridianls.example",
+        "MERIDIAN_DIRECTORY": "${MERIDIAN_REPO}/starter-kit/data/directory",
+        "MERIDIAN_ENV": "dev",
+        "MERIDIAN_MANIFEST": "${MERIDIAN_REPO}/provisioning/out/dev/permissions.json",
+        "MERIDIAN_SERVICE_URL": "http://127.0.0.1:8000"
+      }
+    }
+  },
+  "name": "meridian-usage-dev",
+  "version": "0.1.0"
+}

@@ -1,0 +1,53 @@
+{
+  "capabilities": {
+    "code-execution": {
+      "default_by_group": {
+        "clinical-operations": false,
+        "finance": false,
+        "hr": false,
+        "it-platform": false,
+        "medical-writing": false,
+        "regulatory-affairs": false
+      }
+    },
+    "usage-connector": {
+      "default_by_group": {
+        "clinical-operations": true,
+        "finance": true,
+        "hr": true,
+        "it-platform": true,
+        "medical-writing": true,
+        "regulatory-affairs": true
+      }
+    },
+    "web-search": {
+      "default_by_group": {
+        "clinical-operations": true,
+        "finance": true,
+        "hr": true,
+        "it-platform": true,
+        "medical-writing": true,
+        "regulatory-affairs": true
+      }
+    }
+  },
+  "environment": "staging",
+  "generated_by": "provisioning/render.py",
+  "scopes": {
+    "capabilities:write": {
+      "roles": [
+        "platform_admin",
+        "team_lead"
+      ]
+    },
+    "usage:read": {
+      "group_visibility": "own_group",
+      "roles": [
+        "platform_admin",
+        "team_lead"
+      ]
+    }
+  },
+  "server_name": "meridian-usage-staging",
+  "source": "starter-kit/environments/staging.yaml"
+}

@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "meridian-usage": {
+      "args": [
+        "${MERIDIAN_REPO}/connector/dist/index.js"
+      ],
+      "command": "node",
+      "env": {
+        "MERIDIAN_ACTOR": "chloe.dubois@meridianls.example",
+        "MERIDIAN_DIRECTORY": "${MERIDIAN_REPO}/starter-kit/data/directory",
+        "MERIDIAN_ENV": "prod",
+        "MERIDIAN_MANIFEST": "${MERIDIAN_REPO}/provisioning/out/prod/permissions.json",
+        "MERIDIAN_SERVICE_URL": "http://127.0.0.1:8000"
+      }
+    }
+  }
+}

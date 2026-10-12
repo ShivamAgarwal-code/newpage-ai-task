@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "meridian-usage-staging": {
+      "args": [
+        "${MERIDIAN_REPO}/connector/dist/index.js"
+      ],
+      "command": "node",
+      "env": {
+        "MERIDIAN_ACTOR": "priya.nair@meridianls.example",
+        "MERIDIAN_DIRECTORY": "${MERIDIAN_REPO}/starter-kit/data/directory",
+        "MERIDIAN_ENV": "staging",
+        "MERIDIAN_MANIFEST": "${MERIDIAN_REPO}/provisioning/out/staging/permissions.json",
+        "MERIDIAN_SERVICE_URL": "http://127.0.0.1:8000"
+      }
+    }
+  }
+}

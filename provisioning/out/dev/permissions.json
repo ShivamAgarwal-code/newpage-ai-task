@@ -1,0 +1,54 @@
+{
+  "capabilities": {
+    "code-execution": {
+      "default_by_group": {
+        "clinical-operations": true,
+        "finance": true,
+        "hr": true,
+        "it-platform": true,
+        "medical-writing": true,
+        "regulatory-affairs": true
+      }
+    },
+    "usage-connector": {
+      "default_by_group": {
+        "clinical-operations": true,
+        "finance": true,
+        "hr": true,
+        "it-platform": true,
+        "medical-writing": true,
+        "regulatory-affairs": true
+      }
+    },
+    "web-search": {
+      "default_by_group": {
+        "clinical-operations": true,
+        "finance": true,
+        "hr": true,
+        "it-platform": true,
+        "medical-writing": true,
+        "regulatory-affairs": true
+      }
+    }
+  },
+  "environment": "dev",
+  "generated_by": "provisioning/render.py",
+  "scopes": {
+    "capabilities:write": {
+      "roles": [
+        "platform_admin",
+        "team_lead"
+      ]
+    },
+    "usage:read": {
+      "group_visibility": "all",
+      "roles": [
+        "member",
+        "platform_admin",
+        "team_lead"
+      ]
+    }
+  },
+  "server_name": "meridian-usage-dev",
+  "source": "starter-kit/environments/dev.yaml"
+}
