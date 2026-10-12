@@ -1,0 +1,11 @@
+{
+  "name": "meridian-usage",
+  "version": "0.1.0",
+  "description": "Ask about Meridian AI usage & cost, and manage per-group capability controls — scoped to who you are.",
+  "author": {
+    "name": "Meridian IT Platform",
+    "email": "it-platform@meridianls.example"
+  },
+  "homepage": "https://github.com/meridianls/usage-connector",
+  "keywords": ["usage", "cost", "finops", "governance", "mcp"]
+}
