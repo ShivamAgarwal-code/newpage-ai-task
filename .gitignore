@@ -1,0 +1,19 @@
+# Python
+service/.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+# runtime capability stores (persisted state, not source)
+service/.capabilities.*.sqlite3
+
+# Node
+connector/node_modules/
+connector/dist/
+
+# OS / editor
+.DS_Store
+docs/transcript_raw.txt
+
+# NOTE: provisioning/out/ is committed on purpose — CI's `render.py --check`
+# proves the committed config matches a fresh render (no hand-editing).

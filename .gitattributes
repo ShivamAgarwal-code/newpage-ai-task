@@ -1,0 +1,6 @@
+# Normalise line endings — text is LF in the repo regardless of OS.
+* text=auto eol=lf
+
+# Keep binary/data files untouched.
+*.pdf binary
+*.sqlite3 binary
